@@ -1,8 +1,9 @@
 import subprocess
 import platform
+import re
 
 
-# TODO: definitely rename this class to something less redundant
+# TODO: definitely name this class something less redundant
 class SpeedtestWrapper:
     """Wrapper for Ookla's Speedtest CLI, currently only returns
     results as an object for ease of use"""
@@ -17,34 +18,45 @@ class SpeedtestWrapper:
         self.decoded_results = results.stdout.decode('UTF-8')
         print(self.decoded_results)
 
-        # init attrs
+        # init attrs from captured results
         for line in self.decoded_results.split('\n'):
             if 'Server' in line:
+                # FOR REFERENCE:
+                # RESULT RETURNS "Server: ISP - City, St (id = \d)"
+                city_pattern = r"(\b\w*),"
+                state_pattern = r"\b\w\w\b"
                 # TODO: consider expanding to include more granular options for id and loc
                 self.server = line.split(':')[1].strip()
             elif 'ISP' in line:
                 # expressed as str
                 self.isp = line.split(':')[1].strip()
             elif 'Latency' in line:
-                # latency values expressed as float in ms
+                # FOR REFERENCE:
+                # RESULT RETURNS "Latency:   129.42 ms   (7.09 ms jitter)"
                 results = line.split(':')[1].strip()
                 self.latency = float(results.split('ms')[0])
                 self.jitter = float(results.split('(')[1].split(' ')[0])
             elif 'Download' in line:
                 # TODO: don't use sizing for delimiter, could break on slow networks
+                # TODO: DEFINITELY JUST USE REGEX YOU BRAINLET
+                # FOR REFERENCE:
+                # RESULT RETURNS Download:     8.52 Mbps (data used: 12.1 MB)
                 # speed as float in Mbps
                 self.download_speed = float(line.split(':')[1].split('Mbps')[0])
                 # size as float in MB
                 self.download_size = float(line.split(':')[2].split('MB')[0])
             elif 'Upload' in line:
-                # TODO: change sizing
+                # TODO: REWORK WITH REGEX
+                # FOR REFERENCE
+                # Upload:    41.36 Mbps (data used: 70.2 MB)
                 # speed as float in Mbps
                 self.upload_speed = float(line.split(':')[1].split('Mbps')[0])
                 # size as float in MB
                 self.upload_size = float(line.split(':')[2].split('MB')[0])
             elif 'Packet Loss' in line:
-                # TODO: implement handling for packet loss
-                pass
+                # Pulls latency out of results as \d.\d%
+                latency_pattern = r"\b\d+\.?\d+%"
+                self.packet_loss = re.search(latency_pattern, line)
 
     def __repr__(self):
         return self.decoded_results
