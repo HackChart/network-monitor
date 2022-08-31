@@ -4,7 +4,7 @@ import re
 
 # TODO: refactor into server/connection/handler classes
 # read like RESULTS.SERVER.ID / RESULTS.SERVER.ISP / RESULTS.CONNECTION.UPLOAD / RESULTS.CONNECTION.LATENCY
-# TODO: definitely name this class something less redundant
+# TODO: REFACTOR INTO HANDLER 
 class SpeedtestWrapper:
     """Wrapper for Ookla's Speedtest CLI, currently only returns
     results as an object for ease of use"""
@@ -25,12 +25,14 @@ class SpeedtestWrapper:
                 # FOR REFERENCE:
                 # RESULT RETURNS "Server: ISP - City, St (id = \d)"
                 # TODO: COMBINED REGEX TOO RIGID
-                city_pattern = r"(\b\w*),"
-                state_pattern = r"\b\w\w\b"
-                id_pattern = r"id = (\d*)"
-                # TODO: consider expanding to include more granular options for id and loc
+                # TODO: ** CHECK PATTERN AGAINST CITIES WITH MULTIPART NAME **
+                city_pattern = r"(\b\w*),"   # needs to be subscripted [1]
+                state_pattern = r"\b[A-Z][A-Z]\b"   # no subscript
+                id_pattern = r"id = (\d*)"   # sub [1]
+                # TODO: REMOVE LINE BELOW, USE PATTERNS INDIVIDUALLY TO PARSE RESULTS
                 self.server = line.split(':')[1].strip()
-            # TODO: REMOVE THIS LINE AFTER PARSING SERVER WITH REGEX
+            # TODO: NEVER MIND, DON'T REMOVE. WAY MORE RELIABLE THAN PARSING
+            # TODO: DEFINITELY PARSE WITH REGEX THOUGH FOR RELIABILITY
             elif 'ISP' in line:
                 # expressed as str
                 self.isp = line.split(':')[1].strip()
