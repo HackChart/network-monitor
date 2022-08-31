@@ -2,7 +2,8 @@ import subprocess
 import platform
 import re
 
-
+# TODO: refactor into server/connection/handler classes
+# read like RESULTS.SERVER.ID / RESULTS.SERVER.ISP / RESULTS.CONNECTION.UPLOAD / RESULTS.CONNECTION.LATENCY
 # TODO: definitely name this class something less redundant
 class SpeedtestWrapper:
     """Wrapper for Ookla's Speedtest CLI, currently only returns
@@ -23,10 +24,13 @@ class SpeedtestWrapper:
             if 'Server' in line:
                 # FOR REFERENCE:
                 # RESULT RETURNS "Server: ISP - City, St (id = \d)"
+                # TODO: COMBINED REGEX TOO RIGID
                 city_pattern = r"(\b\w*),"
                 state_pattern = r"\b\w\w\b"
+                id_pattern = r"id = (\d*)"
                 # TODO: consider expanding to include more granular options for id and loc
                 self.server = line.split(':')[1].strip()
+            # TODO: REMOVE THIS LINE AFTER PARSING SERVER WITH REGEX
             elif 'ISP' in line:
                 # expressed as str
                 self.isp = line.split(':')[1].strip()
