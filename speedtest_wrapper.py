@@ -2,14 +2,18 @@ import subprocess
 import platform
 import re
 
+
+# TODO: *** CONSIDER DESIGNING FOR SINGLE USE VS RE-USABILITY ***
+
 # TODO: refactor into server/connection/handler classes
 # read like RESULTS.SERVER.ID / RESULTS.SERVER.ISP / RESULTS.CONNECTION.UPLOAD / RESULTS.CONNECTION.LATENCY
-# TODO: REFACTOR INTO HANDLER 
+# TODO: REFACTOR INTO HANDLER
 class SpeedtestWrapper:
     """Wrapper for Ookla's Speedtest CLI, currently only returns
     results as an object for ease of use"""
     def __init__(self):
         # check OS, run appropriate version of speedtest CLI
+        # TODO: OBFUSCATE LATER, LOOK FOR UTILITY IN PATH / DOWNLOAD / ACCEPT USER PATH
         self.os = platform.system()
         if self.os == 'Windows':
             results = subprocess.run('.\speedtest.exe', capture_output=True)
