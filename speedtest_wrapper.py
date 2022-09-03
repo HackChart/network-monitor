@@ -1,9 +1,9 @@
 import subprocess
 import platform
 import re
+from server import Server
+from connection import Connection
 
-
-# TODO: *** CONSIDER DESIGNING FOR SINGLE USE VS RE-USABILITY ***
 
 # TODO: refactor into server/connection/handler classes
 # read like RESULTS.SERVER.ID / RESULTS.SERVER.ISP / RESULTS.CONNECTION.UPLOAD / RESULTS.CONNECTION.LATENCY
@@ -23,20 +23,24 @@ class SpeedtestWrapper:
         self.decoded_results = results.stdout.decode('UTF-8')
         print(self.decoded_results)
 
-        # init attrs from captured results
+        # ----- CREATE RESULT OBJECTS ----- #
+        # init instances
+        self.server = Server()
+        self.connection = Connection()
+
+        # CREATE SERVER INSTANCE ATTRS
         for line in self.decoded_results.split('\n'):
             if 'Server' in line:
-                # FOR REFERENCE:
-                # RESULT RETURNS "Server: ISP - City, St (id = \d)"
-                # TODO: COMBINED REGEX TOO RIGID
-                # TODO: ** CHECK PATTERN AGAINST CITIES WITH MULTIPART NAME **
+                # Define search patterns
+                # TODO: CHECK THIS PATTERN FOR FLEXIBILITY AGAINST .,\S
                 city_pattern = r"(\b\w*),"   # needs to be subscripted [1]
                 state_pattern = r"\b[A-Z][A-Z]\b"   # no subscript
                 id_pattern = r"id = (\d*)"   # sub [1]
-                # TODO: REMOVE LINE BELOW, USE PATTERNS INDIVIDUALLY TO PARSE RESULTS
-                self.server = line.split(':')[1].strip()
-            # TODO: NEVER MIND, DON'T REMOVE. WAY MORE RELIABLE THAN PARSING
-            # TODO: DEFINITELY PARSE WITH REGEX THOUGH FOR RELIABILITY
+                # Assign attrs
+                self.server.city = re.search(city_pattern, line)[1]   # subscript to remove comma
+                self.server.state = re.search(state_pattern, line)[0]
+                self.server.location = f"{self.server.city}, {self.server.state}"
+                
             elif 'ISP' in line:
                 # expressed as str
                 self.isp = line.split(':')[1].strip()
