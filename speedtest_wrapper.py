@@ -40,8 +40,9 @@ class SpeedtestWrapper:
                 self.server.city = re.search(city_pattern, line)[1]   # subscript to remove comma
                 self.server.state = re.search(state_pattern, line)[0]
                 self.server.location = f"{self.server.city}, {self.server.state}"
-                
+                self.server.id = re.search(id_pattern, line)[1]   # sub 1 to group without delimiters
             elif 'ISP' in line:
+                # TODO: CHANGE TO REGEX FOR FLEXIBILITY
                 # expressed as str
                 self.isp = line.split(':')[1].strip()
             elif 'Latency' in line:
