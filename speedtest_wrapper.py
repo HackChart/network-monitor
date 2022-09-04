@@ -33,6 +33,7 @@ class SpeedtestWrapper:
             if 'Server' in line:
                 # Define search patterns
                 # TODO: CHECK THIS PATTERN FOR FLEXIBILITY AGAINST .,\S
+                # TODO: USE ISP PATTERN FOR REFERENCE
                 city_pattern = r"(\b\w*),"   # needs to be subscripted [1]
                 state_pattern = r"\b[A-Z][A-Z]\b"   # no subscript
                 id_pattern = r"id = (\d*)"   # sub [1]
@@ -42,9 +43,8 @@ class SpeedtestWrapper:
                 self.server.location = f"{self.server.city}, {self.server.state}"
                 self.server.id = re.search(id_pattern, line)[1]   # sub 1 to group without delimiters
             elif 'ISP' in line:
-                # TODO: CHANGE TO REGEX FOR FLEXIBILITY
-                # expressed as str
-                self.isp = line.split(':')[1].strip()
+                isp_pattern = r": (\b[\w\s.-]*\b)"
+                self.server.isp = re.search(isp_pattern, line)[1]   # sub 1 remove delimiter
             elif 'Latency' in line:
                 # FOR REFERENCE:
                 # RESULT RETURNS "Latency:   129.42 ms   (7.09 ms jitter)"
