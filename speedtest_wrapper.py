@@ -32,12 +32,12 @@ class SpeedtestWrapper:
         for line in self.decoded_results.split('\n'):
             if 'Server' in line:
                 # Define search patterns
-                # TODO: CHECK THIS PATTERN FOR FLEXIBILITY AGAINST .,\S
-                # TODO: USE ISP PATTERN FOR REFERENCE
-                city_pattern = r"(\b\w*),"   # needs to be subscripted [1]
+                # TODO: CREATE PATTERN FOR SERVER PROVIDER
+                city_pattern = r"- (\b[\w\s.-]*\b),"   # needs to be subscripted [1]
                 state_pattern = r"\b[A-Z][A-Z]\b"   # no subscript
                 id_pattern = r"id = (\d*)"   # sub [1]
                 # Assign attrs
+                # TODO: ASSIGN SERVER PROVIDER
                 self.server.city = re.search(city_pattern, line)[1]   # subscript to remove comma
                 self.server.state = re.search(state_pattern, line)[0]
                 self.server.location = f"{self.server.city}, {self.server.state}"
@@ -71,15 +71,7 @@ class SpeedtestWrapper:
             elif 'Packet Loss' in line:
                 # Pulls latency out of results as \d.\d%
                 latency_pattern = r"\b\d+\.?\d+%"
-                self.packet_loss = re.search(latency_pattern, line)
+                self.connection.packet_loss = re.search(latency_pattern, line)
 
     def __repr__(self):
         return self.decoded_results
-
-
-if __name__ == '__main__':
-    # TODO: remove later, for testing purposes only
-    results = SpeedtestWrapper()
-    print(results.upload_speed)
-    print(results.download_speed)
-    print(results)
