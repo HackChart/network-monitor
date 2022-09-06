@@ -5,8 +5,7 @@ from server import Server
 from connection import Connection
 
 
-# TODO: refactor into server/connection/handler classes
-# read like RESULTS.SERVER.ID / RESULTS.SERVER.ISP / RESULTS.CONNECTION.UPLOAD / RESULTS.CONNECTION.LATENCY
+# TODO: ATTR INITS NEED EXCEPTION HANDLING (maybe just check all nonetypes before sub? 
 # TODO: REFACTOR INTO HANDLER
 class SpeedtestWrapper:
     """Wrapper for Ookla's Speedtest CLI, currently only returns
@@ -31,17 +30,17 @@ class SpeedtestWrapper:
         # CREATE SERVER INSTANCE ATTRS
         for line in self.decoded_results.split('\n'):
             if 'Server' in line:
-                # Define search patterns
-                # TODO: CREATE PATTERN FOR SERVER PROVIDER
-                city_pattern = r"- (\b[\w\s.-]*\b),"   # needs to be subscripted [1]
+                # Define search patterns (some need to be subbed to remove delimiters
+                owner_pattern = r": (\b[\w\s.-]*\b) -"   # sub 1
+                city_pattern = r"- (\b[\w\s.-]*\b),"   # sub 1
                 state_pattern = r"\b[A-Z][A-Z]\b"   # no subscript
                 id_pattern = r"id = (\d*)"   # sub [1]
-                # Assign attrs
-                # TODO: ASSIGN SERVER PROVIDER
-                self.server.city = re.search(city_pattern, line)[1]   # subscript to remove comma
+                # Assign attrs ** SOME SUBSCRIPTED TO REMOVE DELIMITERS **
+                self.server.owner = re.search(owner_pattern, line)[1]
+                self.server.city = re.search(city_pattern, line)[1]
                 self.server.state = re.search(state_pattern, line)[0]
                 self.server.location = f"{self.server.city}, {self.server.state}"
-                self.server.id = re.search(id_pattern, line)[1]   # sub 1 to group without delimiters
+                self.server.id = re.search(id_pattern, line)[1]
             elif 'ISP' in line:
                 isp_pattern = r": (\b[\w\s.-]*\b)"
                 self.server.isp = re.search(isp_pattern, line)[1]   # sub 1 remove delimiter
