@@ -9,7 +9,8 @@ from connection import Connection
 # TODO: IMPLEMENT ERROR HANDLING IN THE CASE OF NO MATCH / NOT AS MANY MATCHES FOUND AS EXPECTED
 # TODO: REFACTOR INTO HANDLER
 
-class SpeedtestWrapper:
+
+class Speedtest:
     """Wrapper for Ookla's Speedtest CLI, currently only returns
     results as an object for ease of use"""
     def __init__(self):

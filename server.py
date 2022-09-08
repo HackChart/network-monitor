@@ -1,11 +1,3 @@
-import re
-
-# TODO: DO MORE RESEARCH INTO SERVER/ISP BREAKDOWN - OWNER??
-# RESULTS INCONSISTENT
-#      Server: Rock Island Communications - Seattle, WA (id = 26805)
-#         ISP: Apple
-
-
 class Server:
     def __init__(self):
         self.isp = None
