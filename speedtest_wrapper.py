@@ -4,9 +4,11 @@ import re
 from server import Server
 from connection import Connection
 
-
-# TODO: ATTR INITS NEED EXCEPTION HANDLING (maybe just check all nonetypes before sub? 
+# PASSED BASIC TESTING
+# TODO: TYPE CAST DATA INTO CORRECT DATATYPE / VALIDATE DATA
+# TODO: IMPLEMENT ERROR HANDLING IN THE CASE OF NO MATCH / NOT AS MANY MATCHES FOUND AS EXPECTED
 # TODO: REFACTOR INTO HANDLER
+
 class SpeedtestWrapper:
     """Wrapper for Ookla's Speedtest CLI, currently only returns
     results as an object for ease of use"""
@@ -26,9 +28,12 @@ class SpeedtestWrapper:
         # init instances
         self.server = Server()
         self.connection = Connection()
+        # define over-arching patterns
+        connection_pattern = r"(\b\d*\.?\d*) \w+"
 
         # CREATE SERVER INSTANCE ATTRS
         for line in self.decoded_results.split('\n'):
+            # TODO: ATTR INITS NEED EXCEPTION HANDLING (maybe just check all nonetypes before sub?
             if 'Server' in line:
                 # Define search patterns (some need to be subbed to remove delimiters
                 owner_pattern = r": (\b[\w\s.-]*\b) -"   # sub 1
@@ -45,32 +50,33 @@ class SpeedtestWrapper:
                 isp_pattern = r": (\b[\w\s.-]*\b)"
                 self.server.isp = re.search(isp_pattern, line)[1]   # sub 1 remove delimiter
             elif 'Latency' in line:
-                # FOR REFERENCE:
-                # RESULT RETURNS "Latency:   129.42 ms   (7.09 ms jitter)"
-                results = line.split(':')[1].strip()
-                self.latency = float(results.split('ms')[0])
-                self.jitter = float(results.split('(')[1].split(' ')[0])
+                """LATENCY VALUES EXPRESSED IN MS"""
+                # Parse out latency and jitter
+                # TODO: PROBABLY CHECK THIS LOGIC AGAIN 🙃
+                # remove any potential empty match strings
+                parsed_latency = [i for i in re.findall(connection_pattern, line) if i]   # should find latency & jitter at [0]/[1]
+                self.connection.latency = parsed_latency[0]
+                self.connection.jitter = parsed_latency[1]
             elif 'Download' in line:
-                # TODO: don't use sizing for delimiter, could break on slow networks
-                # TODO: DEFINITELY JUST USE REGEX YOU BRAINLET
-                # FOR REFERENCE:
-                # RESULT RETURNS Download:     8.52 Mbps (data used: 12.1 MB)
-                # speed as float in Mbps
-                self.download_speed = float(line.split(':')[1].split('Mbps')[0])
-                # size as float in MB
-                self.download_size = float(line.split(':')[2].split('MB')[0])
+                """
+                DOWNLOAD SPEED EXPRESSED IN Mbps
+                DOWNLOAD SIZE EXPRESSED IN MB
+                """
+                parsed_download = [i for i in re.findall(connection_pattern, line) if i]   # should remove any false matches
+                self.connection.download_speed = parsed_download[0]
+                self.connection.download_size = parsed_download[1]
             elif 'Upload' in line:
-                # TODO: REWORK WITH REGEX
-                # FOR REFERENCE
-                # Upload:    41.36 Mbps (data used: 70.2 MB)
-                # speed as float in Mbps
-                self.upload_speed = float(line.split(':')[1].split('Mbps')[0])
-                # size as float in MB
-                self.upload_size = float(line.split(':')[2].split('MB')[0])
+                """
+                UPLOAD SPEED EXPRESSED IN Mbps
+                UPLOAD SIZE EXPRESSED IN MB
+                """
+                parsed_upload = [i for i in re.findall(connection_pattern, line) if i]    # remove false matches
+                self.connection.upload_speed = parsed_upload[0]
+                self.connection.upload_size = parsed_upload[1]
             elif 'Packet Loss' in line:
                 # Pulls latency out of results as \d.\d%
-                latency_pattern = r"\b\d+\.?\d+%"
-                self.connection.packet_loss = re.search(latency_pattern, line)
+                loss_pattern = r"\b\d+\.?\d+%"
+                self.connection.packet_loss = re.search(loss_pattern, line)[0]
 
     def __repr__(self):
         return self.decoded_results
