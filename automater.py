@@ -1,5 +1,8 @@
 import subprocess
 import json
+import logging
+from server import Server
+from connection import Connection
 
 
 # ----- PROOF OF CONCEPT ----- #
@@ -13,3 +16,20 @@ class Speedtest:
         # TODO: LOG SUCCESS / FAILURE
         # TODO: CHECK IF NETWORK DATABASE EXISTS, IF NOT, CREATE
         # TODO: APPEND RESULTS
+        # TODO: CREATE RESULTS OBJECT
+
+
+        # TODO: MAP OUT HOW DATA SHOULD BE STRUCTURED IN END RESULT
+        # INIT ATTRS
+        self.server = Server()
+        self.connection = Connection()
+
+        # results attrs
+        self.timestamp = jdata["timestamp"]
+        # server attrs
+        self.server.id = jdata['server']['id']
+        self.server.name = jdata['server']['name']
+        self.server.location = jdata['server']['location']
+
+
+
