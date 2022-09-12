@@ -32,4 +32,10 @@ class Speedtest:
         self.server.location = jdata['server']['location']
 
 
-
+# TODO: START TO DYNAMIC OBJECT, NEEDS GLOBALS FOR NESTED DYNAMICS
+# TODO: LOOK INTO GLOBALS
+class X:
+    def __init__(self, data):
+        for key in data:
+            if type(data[key]) != dict:
+                setattr(self, key, data[key])
