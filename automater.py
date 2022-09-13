@@ -1,8 +1,7 @@
 import subprocess
 import json
 import logging
-from server import Server
-from connection import Connection
+import os
 
 
 # ----- PROOF OF CONCEPT ----- #
@@ -10,13 +9,23 @@ from connection import Connection
 class Speedtest:
     def __init__(self):
         # capture result data from CLI utility
-        # TODO: HANDLE CLI PATH EXECUTION
-        results = subprocess.check_output(['./speedtest', '-f', 'json'])
-        jdata = json.loads(results)   # convert results to json
+        # TODO: SEARCH FOR CONFIG FILE
+        if os.path.exists('config.json'):
+            pass
+
+        try:
+            # TODO: CHECK CONFIG FILE FOR CLU PATH
+            results = subprocess.check_output(['./speedtest', '-f', 'json'])
+        except FileNotFoundError as err:
+            # TODO: CHANGE TO LOGGING LATER
+            print(f'FileNotFound: {err}]')
+        else:
+            # dynamically set result obj attributes
+            jdata = json.loads(results)   # convert results to json
+            self.set_attributes(jdata)   #
         # TODO: LOG SUCCESS / FAILURE
-        # TODO: CHECK IF NETWORK DATABASE EXISTS, IF NOT, CREATE
+        # TODO: CHECK CONFIG FILE FOR OUTPUT FILE
         # TODO: APPEND RESULTS
-        # TODO: CREATE RESULTS OBJECT
 
     def set_attributes(self, data):
         """Sets obj attributes from json"""
