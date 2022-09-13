@@ -18,24 +18,11 @@ class Speedtest:
         # TODO: APPEND RESULTS
         # TODO: CREATE RESULTS OBJECT
 
-
-        # TODO: MAP OUT HOW DATA SHOULD BE STRUCTURED IN END RESULT
-        # INIT ATTRS
-        self.server = Server()
-        self.connection = Connection()
-
-        # results attrs
-        self.timestamp = jdata["timestamp"]
-        # server attrs
-        self.server.id = jdata['server']['id']
-        self.server.name = jdata['server']['name']
-        self.server.location = jdata['server']['location']
-
-
-# TODO: START TO DYNAMIC OBJECT, NEEDS GLOBALS FOR NESTED DYNAMICS
-# TODO: LOOK INTO GLOBALS
-class X:
-    def __init__(self, data):
+    def set_attributes(self, data):
+        """Sets obj attributes from json"""
         for key in data:
             if type(data[key]) != dict:
                 setattr(self, key, data[key])
+            else:
+                for nested_key, value in data[key].items():
+                    setattr(self, f'{key}_{nested_key}', value)
