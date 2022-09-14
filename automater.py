@@ -11,7 +11,16 @@ class Speedtest:
         # capture result data from CLI utility
         # TODO: SEARCH FOR CONFIG FILE
         if os.path.exists('config.json'):
-            pass
+            with open('config.json', 'r') as f:
+                try:
+                    config_data = json.load(f)
+                except TypeError as err:
+                    # TODO: LOG ERR
+                    pass
+                else:
+                    # SET CONFIG ATTRS
+                    self.path = config_data['path']
+                    self.output_file = config_data['output']
 
         try:
             # TODO: CHECK CONFIG FILE FOR CLU PATH
