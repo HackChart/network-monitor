@@ -24,7 +24,7 @@ class Speedtest:
 
         try:
             # TODO: CHECK CONFIG FILE FOR CLU PATH
-            results = subprocess.check_output(['./speedtest', '-f', 'json'])
+            results = subprocess.check_output([self.path, '-f', 'json'])
         except FileNotFoundError as err:
             # TODO: CHANGE TO LOGGING LATER
             print(f'FileNotFound: {err}]')
