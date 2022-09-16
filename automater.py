@@ -52,6 +52,7 @@ class Speedtest:
         # REMOVE NON RELEVANT ATTRS FROM ATTRS TO APPEND
         csv_data = {key: value for key, value in vars(self).items() if key != 'path' and key != 'output_file'}
         # write to file
+        # TODO: FIX - ALWAYS CREATES NEW FILE / EXISTS RETURNS FALSE
         if not os.path.exists(self.output_file):
             # if no file, create header
             with open(self.output_file, 'w') as f:
@@ -62,3 +63,8 @@ class Speedtest:
         with open(self.output_file, 'a') as f:
             writer = csv.writer(f)
             writer.writerow(csv_data.values())
+
+        # TODO: PROBABLY A DIFFERENT OBJ, BUT IMPLEMENT GRAPHING AND BYTE CONVERSION
+        # TODO: FOR READABILITY
+
+        # TODO: TRY TO BREAK ALL OF THIS
