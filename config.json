@@ -1,1 +1,1 @@
-{"path": ".\\speedtest.exe", "output": "network_results.csv"}
+{"path": "./speedtest", "output": "network_results.csv"}
