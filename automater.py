@@ -48,23 +48,27 @@ class Speedtest:
                     setattr(self, f'{key}_{nested_key}', value)
 
     def to_csv(self):
-        # TODO: WORKING, BUT COULD RUN INTO ISSUES WITH , IN LOCATION
         # REMOVE NON RELEVANT ATTRS FROM ATTRS TO APPEND
         csv_data = {key: value for key, value in vars(self).items() if key != 'path' and key != 'output_file'}
         # write to file
-        # TODO: FIX - ALWAYS CREATES NEW FILE / EXISTS RETURNS FALSE
+        # TODO: FIX - ROWS ARE MISMATCHED FROM TIME TO TIME, POTENTIALLY NOT APPENDING FOR NULL VALUE?
         if not os.path.exists(self.output_file):
             # if no file, create header
             with open(self.output_file, 'w') as f:
-                writer = csv.writer(f)
-                header = csv_data.keys()
-                writer.writerow(header)
+                writer = csv.DictWriter(f, fieldnames=list(csv_data.keys()))
+                writer.writeheader()
         # append result data
         with open(self.output_file, 'a') as f:
-            writer = csv.writer(f)
-            writer.writerow(csv_data.values())
+            writer = csv.DictWriter(f, fieldnames=list(csv_data.keys()))
+            writer.writerow(csv_data)
 
         # TODO: PROBABLY A DIFFERENT OBJ, BUT IMPLEMENT GRAPHING AND BYTE CONVERSION
         # TODO: FOR READABILITY
 
         # TODO: TRY TO BREAK ALL OF THIS
+
+
+if __name__ == '__main__':
+    for i in range(2):
+        x = Speedtest()
+        x.to_csv()
