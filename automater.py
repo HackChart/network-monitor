@@ -71,4 +71,5 @@ class Speedtest:
 if __name__ == '__main__':
     for i in range(2):
         x = Speedtest()
+        print(len(vars(x)), vars(x))
         x.to_csv()
