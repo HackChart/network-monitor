@@ -52,6 +52,9 @@ class Speedtest:
         csv_data = {key: value for key, value in vars(self).items() if key != 'path' and key != 'output_file'}
         # write to file
         # TODO: FIX - ROWS ARE MISMATCHED FROM TIME TO TIME, POTENTIALLY NOT APPENDING FOR NULL VALUE?
+        # TODO: UPDATE: SEEMS LIKE ITS USUALLY PACKET LOSS THAT DOESNT APPEND
+        # TODO: TEST TO MAKE SURE THAT ONLY PACKET LOSS DROPS
+        # TODO: IMPLEMENT ERROR CHECKING SO THAT N/A VALUES ARE APPENDED FOR MISSING COLS
         if not os.path.exists(self.output_file):
             # if no file, create header
             with open(self.output_file, 'w') as f:
@@ -69,7 +72,7 @@ class Speedtest:
 
 
 if __name__ == '__main__':
-    for i in range(2):
+    for i in range(71):
         x = Speedtest()
         print(len(vars(x)), vars(x))
         x.to_csv()
