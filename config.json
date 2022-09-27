@@ -1,1 +1,1 @@
-{"path": "./speedtest", "output": "network_results.csv"}
+{"cli_path": ".\\speedtest.exe", "log_path": "", "output": "network_results.csv", "retries": 2, "wait":  10}
