@@ -73,7 +73,18 @@ class Speedtest:
         # checks to see if packetLoss needs to be set
         if getattr(self, "packetLoss", None) is None:
             setattr(self, "packetLoss", "N/A")
-        # TODO: IMPLEMENT BYTE CONVERSION TO HUMAN READABLE FORMAT
+        # create human-readable entries for network speed
+        # TODO: TEST LATER
+        setattr(
+            self,
+            'download_speed_Mbps',
+            round(getattr(self, "download_bandwidth") / 125_000, 2)
+        )
+        setattr(
+            self,
+            'upload_speed_Mbps',
+            round(getattr(self, "upload_bandwidth") / 125_000, 2)
+        )
         # REMOVE CONFIG ATTRS FROM ATTRS TO APPEND
         config_attrs = ['cli_path', 'log_path', 'output_file', 'retries', 'wait']
         csv_data = {key: value for key, value in vars(self).items()
