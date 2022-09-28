@@ -16,7 +16,6 @@ from sys import exit
 # designed to monitor network performance by automating tests
 class Speedtest:
     def __init__(self):
-        # TODO: SEARCH FOR CONFIG FILE
         # CHECK CONFIG, LOAD IF EXISTS
         if os.path.exists('config.json'):
             with open('config.json', 'r') as f:
@@ -42,8 +41,10 @@ class Speedtest:
                                 exit(2)
                         setattr(self, key, value)
         else:
+            # TODO: FAILURE TO FIND CONFIG FILE
             # TODO: RAISE CUSTOM ERR, LOG, EXIT
             pass
+
         try:
             results = subprocess.check_output([getattr(self, 'cli_path'), '-f', 'json'])
         except FileNotFoundError as err:
@@ -52,13 +53,20 @@ class Speedtest:
         except subprocess.CalledProcessError as e:
             # TODO: LOG FAILURE, WAIT, TRY AGAIN
             for _ in getattr(self, "retries"):
+                # TODO: LOG - TRYING N OF X
                 sleep(getattr(self, "wait"))
                 # TODO: CHECK FOR RETURN CODE FOR BREAK
-                Speedtest()   # run another test
+                retry = Speedtest()   # run another test
+                if len(vars(retry)) > 10:   # check whether results were appended
+                    retry.to_csv()
+                    # TODO: LOG SUCCESS OF N
+                    exit(0)
+            # TODO: LOG RETRY FAILURE
+            exit(2)
         else:
             # dynamically set result obj attributes
             jdata = json.loads(results)   # convert results to json
-            self.set_attributes(jdata)   #
+            self.set_attributes(jdata)
         # TODO: LOG SUCCESS / FAILURE
 
     def set_attributes(self, data):
