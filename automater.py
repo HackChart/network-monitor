@@ -8,6 +8,7 @@ from sys import exit
 
 
 # TODO: [] CONVERT BYTE DATA TO HUMAN READABLE FORM FOR EXPORT
+# TODO: [] CHECK FOR RETURN CODE IF SUCCESSFUL RUN
 # TODO: [] IMPLEMENT LOGGING WHERE APPLICABLE
 # TODO: [] WRITE A README
 # TODO: [] CLEANUP 
@@ -68,40 +69,34 @@ class Speedtest:
             else:
                 for nested_key, nested_value in data[key].items():
                     setattr(self, f'{key}_{nested_key}', nested_value)
-
-    def to_csv(self):
+                    # create human-readable entries for network speed
+                    if 'bandwidth' in nested_key:
+                        setattr(
+                            self,
+                            f'{key}_{nested_key}_Mbps',
+                            round(nested_value / 125_000, 2
+                                  ))
         # checks to see if packetLoss needs to be set
         if getattr(self, "packetLoss", None) is None:
             setattr(self, "packetLoss", "N/A")
-        # create human-readable entries for network speed
-        # TODO: TEST LATER
-        setattr(
-            self,
-            'download_speed_Mbps',
-            round(getattr(self, "download_bandwidth") / 125_000, 2)
-        )
-        setattr(
-            self,
-            'upload_speed_Mbps',
-            round(getattr(self, "upload_bandwidth") / 125_000, 2)
-        )
+
+    def to_csv(self):
         # REMOVE CONFIG ATTRS FROM ATTRS TO APPEND
-        config_attrs = ['cli_path', 'log_path', 'output_file', 'retries', 'wait']
+        config_attrs = ['cli_path', 'log_path', 'output', 'retries', 'wait']
         csv_data = {key: value for key, value in vars(self).items()
                     if key not in config_attrs}
         # write to file
-        if not os.path.exists(getattr(self, "output_file")):
+        if not os.path.exists(getattr(self, "output")):
             # if no file, create header
-            with open(getattr(self, "output_file"), 'w') as f:
+            with open(getattr(self, "output"), 'w') as f:
                 writer = csv.DictWriter(f, fieldnames=list(csv_data.keys()))
                 writer.writeheader()
                 # TODO: LOG NEW FILE CREATED AT PATH
         # append result data
-        with open(getattr(self, "output_file"), 'a') as f:
+        with open(getattr(self, "output"), 'a') as f:
             writer = csv.DictWriter(f, fieldnames=list(csv_data.keys()))
             writer.writerow(csv_data)
             # TODO: LOG FILE APPENDED PROPERLY
-
 
 
 # TODO: REMOVE LATER, JUST FOR TESTING
