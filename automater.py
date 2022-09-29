@@ -6,7 +6,7 @@ import csv
 from time import sleep
 from sys import exit
 from err import log_error
-
+import re
 
 # TODO: [] WRITE A README
 # TODO: [] CLEANUP 
@@ -17,16 +17,29 @@ class Speedtest:
     def __init__(self):
 
         # CONFIG LOGGING
-        init_log = 'network_monitor.log'
-        log_level = 'DEBUG'
-        logging.basicConfig(
-            filename=init_log,
-            encoding='utf-8',
-            level=log_level,
-            format='%(asctime)s - %(levelname)s - %(message)s',
-            datefmt='%m/%d/%Y %I:%M:%S %p'
-        )
-        logging.info('Logging configured')
+        try:
+            with open('config.json', 'r') as f:
+                pass
+        except FileNotFoundError:
+            # TODO: CREATE FALLBACK LOG, LOG INCIDENT
+            pass
+        else:
+            # TODO: TRY TO VALIDATE LOG CONFIG OPTIONS, SET LOG / FALLBACK LOG IF NOT
+            try:
+                # check whether path is valid string
+                # TODO: USE RE TO VALIDATE THAT PATH ENDS IN .LOG
+
+                # TODO: VALIDATE LOG LEVEL, SET TO DEBUG IF NOT VALID
+
+                # TODO: CHANGE THIS TO REFLECT CONFIG
+                logging.basicConfig(
+                    filename=init_log,
+                    encoding='utf-8',
+                    level=log_level,
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%m/%d/%Y %I:%M:%S %p'
+                )
+                logging.info('Logging configured')
 
         # CHECK CONFIG, LOAD IF EXISTS
         logging.debug("Checking for config file..")
@@ -58,6 +71,7 @@ class Speedtest:
                     logging.debug('Config data set properly.')
 
                     # RECONFIGURE LOG IF NEEDED
+                    # TODO: REMOVE THIS WHEN UPDATED SOLUTION WORKING
                     if not init_log == getattr(self, 'log_path') or not log_level == getattr(self, 'log_level'):
                         logging.debug(f'Reconfiguring log - Path={getattr(self, "log_path")} & Log Level={getattr(self, "log_level")}')
                         for handler in logging.root.handlers[:]:
