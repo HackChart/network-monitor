@@ -8,40 +8,51 @@ from sys import exit
 from err import log_error
 import re
 
+# TODO: [] CREATE REQUIREMENTS.TXT
 # TODO: [] WRITE A README
 # TODO: [] CLEANUP 
 # ----- PROOF OF CONCEPT ----- #
 # designed to monitor network performance by automating tests
 
+
 class Speedtest:
     def __init__(self):
-
         # CONFIG LOGGING
         try:
             with open('config.json', 'r') as f:
-                pass
+                cdata = json.load(f)
         except FileNotFoundError:
-            # TODO: CREATE FALLBACK LOG, LOG INCIDENT
-            pass
+            # SET CONTINGENCY LOG
+            logging.basicConfig(
+                filename='network_monitor.log',
+                encoding='utf-8',
+                level='DEBUG',
+                format='%(asctime)s - %(levelname)s - %(message)s',
+                datefmt='%m/%d/%Y %I:%M:%S %p'
+            )
+            logging.debug('No config file found, creating contingency log.')
         else:
-            # TODO: TRY TO VALIDATE LOG CONFIG OPTIONS, SET LOG / FALLBACK LOG IF NOT
-            try:
-                # check whether path is valid string
-                # TODO: USE RE TO VALIDATE THAT PATH ENDS IN .LOG
+            # FILE FOUND, CONFIG FROM USER PRESETS
+            log_path = cdata.get('log_path')
+            log_level = cdata.get('log_level')
+            # validate path config
+            # TODO: MAKE SURE LOG PATH ISN'T EMPTY 
+            if not log_path or not re.search(r'.*\.log$', log_path.strip()):
+                log_path = f'{log_path.strip()}.log'
+            # validate log level
+            if not log_level or not log_level.upper() in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:
+                log_level = 'DEBUG'
+            # configure logging
+            logging.basicConfig(
+                filename=log_path,
+                encoding='utf-8',
+                level=log_level,
+                format='%(asctime)s - %(levelname)s - %(message)s',
+                datefmt='%m/%d/%Y %I:%M:%S %p'
+            )
+            logging.debug(f'Logging configured: Log Path set to {log_path} | Log Level set to {log_level}')
 
-                # TODO: VALIDATE LOG LEVEL, SET TO DEBUG IF NOT VALID
-
-                # TODO: CHANGE THIS TO REFLECT CONFIG
-                logging.basicConfig(
-                    filename=init_log,
-                    encoding='utf-8',
-                    level=log_level,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    datefmt='%m/%d/%Y %I:%M:%S %p'
-                )
-                logging.info('Logging configured')
-
-        # CHECK CONFIG, LOAD IF EXISTS
+        # NON-LOGGING RELATED CONFIG
         logging.debug("Checking for config file..")
         if os.path.exists('config.json'):
             with open('config.json', 'r') as f:
@@ -69,20 +80,6 @@ class Speedtest:
                                 log_error(e)
                         setattr(self, key, value)
                     logging.debug('Config data set properly.')
-
-                    # RECONFIGURE LOG IF NEEDED
-                    # TODO: REMOVE THIS WHEN UPDATED SOLUTION WORKING
-                    if not init_log == getattr(self, 'log_path') or not log_level == getattr(self, 'log_level'):
-                        logging.debug(f'Reconfiguring log - Path={getattr(self, "log_path")} & Log Level={getattr(self, "log_level")}')
-                        for handler in logging.root.handlers[:]:
-                            logging.root.removeHandler(handler)
-                        logging.basicConfig(
-                            filename=getattr(self, 'log_path', 'network_monitor.log'),
-                            encoding='utf-8',
-                            level=getattr(logging, getattr(self, 'log_level', 'WARNING').upper()),
-                            format='%(asctime)s - %(levelname)s - %(message)s',
-                            datefmt='%m/%d/%Y %I:%M:%S %p'
-                        )
         else:
             # config not found
             log_error('config.json not found, ensure file is located in current directory')
