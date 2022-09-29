@@ -1,1 +1,1 @@
-{"cli_path": "./speedtest", "log_path": "", "output": "network_results.csv", "retries": 2, "wait":  10}
+{"cli_path": ".\\speedtest.exe", "log_path": "network_monitor.log", "log_level": "DEBUG", "output": "network_results.csv", "retries": 2, "wait":  10}
