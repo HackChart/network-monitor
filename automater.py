@@ -23,26 +23,24 @@ class Speedtest:
                 cdata = json.load(f)
         except FileNotFoundError:
             # SET CONTINGENCY LOG
-            logging.basicConfig(
-                filename='network_monitor.log',
-                encoding='utf-8',
-                level='DEBUG',
-                format='%(asctime)s - %(levelname)s - %(message)s',
-                datefmt='%m/%d/%Y %I:%M:%S %p'
-            )
-            logging.debug('No config file found, creating contingency log.')
+            log_path = 'network_monitor.log'
+            log_level = 'DEBUG'
+            log_msg = 'No config file found, creating contingency log.'
         else:
             # FILE FOUND, CONFIG FROM USER PRESETS
             log_path = cdata.get('log_path')
             log_level = cdata.get('log_level')
             # validate path config
-            # TODO: MAKE SURE LOG PATH ISN'T EMPTY 
-            if not log_path or not re.search(r'.*\.log$', log_path.strip()):
+            if log_path and not len(log_path) > 0 or not log_path:
+                log_path = 'network_monitor.log'
+            if not re.search(r'.*\.log$', log_path.strip()):
                 log_path = f'{log_path.strip()}.log'
             # validate log level
             if not log_level or not log_level.upper() in ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']:
                 log_level = 'DEBUG'
-            # configure logging
+            log_msg = f'Logging configured: Log Path set to {log_path} | Log Level set to {log_level}'
+        finally:
+            #  configure logging
             logging.basicConfig(
                 filename=log_path,
                 encoding='utf-8',
@@ -50,7 +48,7 @@ class Speedtest:
                 format='%(asctime)s - %(levelname)s - %(message)s',
                 datefmt='%m/%d/%Y %I:%M:%S %p'
             )
-            logging.debug(f'Logging configured: Log Path set to {log_path} | Log Level set to {log_level}')
+            logging.debug(log_msg)
 
         # NON-LOGGING RELATED CONFIG
         logging.debug("Checking for config file..")
@@ -159,5 +157,5 @@ class Speedtest:
 if __name__ == '__main__':
     for i in range(2):
         x = Speedtest()
-        print(len(vars(x)), vars(x))
+        # print(len(vars(x)), vars(x))
         x.to_csv()
