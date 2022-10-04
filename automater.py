@@ -8,9 +8,8 @@ from sys import exit
 from err import log_error
 import re
 
-# TODO: [] CREATE REQUIREMENTS.TXT
+
 # TODO: [] WRITE A README
-# TODO: [] CLEANUP 
 # ----- PROOF OF CONCEPT ----- #
 # designed to monitor network performance by automating tests
 
@@ -151,11 +150,3 @@ class Speedtest:
             writer = csv.DictWriter(f, fieldnames=list(csv_data.keys()))
             writer.writerow(csv_data)
             logging.debug('Append successful.')
-
-
-# TODO: REMOVE LATER, JUST FOR TESTING
-if __name__ == '__main__':
-    for i in range(2):
-        x = Speedtest()
-        # print(len(vars(x)), vars(x))
-        x.to_csv()
